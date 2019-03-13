@@ -3,12 +3,17 @@
 const express = require("express");
 
 const ExpressError = require("./helpers/expressError");
+const companyRoutes =require('./routes/companies');
 
 const morgan = require("morgan");
 
 const app = express();
 
 app.use(express.json());
+
+
+
+app.use('/companies',companyRoutes);
 
 // add logging system
 app.use(morgan("tiny"));

@@ -9,6 +9,16 @@ const jsonschema = require('jsonschema');
 const router = express.Router();
 
 
-router.get("")
+router.get("/", async function(req, res, next) {
+    try{
+        debugger
+        let {search, min_employees, max_employees} = req.query;
+        let companies = await Company.searchByQuery({search, min_employees, max_employees});
+        return res.json({companies}); 
+    }
+    catch(err){
+        next(err);
+    }
+});
 
 module.exports = router;
