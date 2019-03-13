@@ -21,7 +21,8 @@ class Company {
             params.push(max_employees)
         }
 
-        let query = `SELECT handle, name FROM companies`; 
+        let query = `SELECT handle, name 
+                     FROM companies`; 
 
         if (args.length > 0){
             query += ` WHERE ${args.join(' AND ')}`
