@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-const buildSearchQuery = require("../helpers/buildSearchQuery");
 const db = require("../db");
 const { BCRYPT_WORK_ROUNDS } = require("../config");
 //FIXME
@@ -7,7 +6,7 @@ const { BCRYPT_WORK_ROUNDS } = require("../config");
 class User {
   static async addUser( {username, password, first_name, last_name, email, photo_url, is_admin = false }) {
     try {
-      let hashedPassword = bcrypt.hash(password, BCRYPT_WORK_ROUNDS);
+      let hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_ROUNDS);
       let result = await db.query(
         ` INSERT INTO users (username, password, first_name, last_name, email, photo_url, is_admin)
                       VALUES ($1, $2, $3, $4, $5, $6, $7)
