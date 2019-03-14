@@ -13,6 +13,9 @@ const router = express.Router();
 router.get("/", async function(req, res, next) {
     try{
         let {search, min_employees, max_employees} = req.query;
+        if (min_employees && !Number.isInteger(+min_employees) || max_employees && !Number.isInteger(+max_employees)){
+            throw new ExpressError("min_employees and max_employees must be integers", 400);
+        }
         if (min_employees > max_employees){
             throw new ExpressError("min_employees cannot be greater than max_employees", 400);
         }
