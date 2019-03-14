@@ -66,7 +66,7 @@ describe("Company.searchByQuery()", function() {
     });
 })
 
-//'TEST3', 'Test Co3', 3000, 'test description3', 'test_url3')
+
 describe("Company.addCompany()", function() {
     test("test adding a new company", async function(){
         let handle = 'TEST4';
@@ -83,6 +83,15 @@ describe("Company.addCompany()", function() {
                                    num_employees:4000,
                                    description: 'test description4',
                                    logo_url: 'test_url4'});
-        
+
+        const records =  await Company.searchByQuery({search:'Test Co4', 
+                                                      min_employees:undefined,
+                                                      max_employees:undefined});
+        expect(records).toHaveLength(1);
+        expect(records[0]).toEqual({handle: "TEST4", name: "Test Co4"})
     });
+
+
+
+
 });
