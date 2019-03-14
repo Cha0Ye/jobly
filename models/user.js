@@ -46,7 +46,24 @@ class User {
       return user.rows[0];
   }
 
-  static async updateUser()
+  static async updateUser({ query, values }){
+    try{
+        const update = await db.query(query, values);
+        return update.rows[0];
+    } catch(err){
+        throw { message: "Must update one of the following: first_name, last_name, email, photo_url",
+                status: 400};
+    }
+  }
+
+  static async deleteUser(username){
+      let deletedUser = await db.query(
+          `DELETE from users
+           WHERE username=$1
+           RETURNING username`, [username]
+      ); 
+      return deletedUser.rows[0];
+  }
 }
 
 module.exports = User;
