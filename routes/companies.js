@@ -9,7 +9,7 @@ const patchCompanySchema = require('../schemas/patchCompany.json');
 
 const router = express.Router();
 
-
+/** Route to get company information given a search term, min empoloyees, and or max employees. Returns {companies: [{handle]} */
 router.get("/", async function(req, res, next) {
     try{
         let {search, min_employees, max_employees} = req.query;
@@ -40,7 +40,7 @@ router.get('/:handle', async function(req, res, next){
         return res.json({company});
     }
     catch(err){
-        next(err);
+        return next(err);
     }
 });
 
@@ -76,14 +76,12 @@ router.patch("/:handle", async function(req, res, next){
         
         let { name, num_employees, description, logo_url } = req.body
 
-        let table = 'companies';
         let items = { name, num_employees, description, logo_url };
-        let key = 'handle';
         let id = req.params.handle;
 
-        let partialUpdateQuery = sqlForPartialUpdate(table, items, key, id);
+        let partialUpdateQuery = sqlForPartialUpdate('companies', items, 'handle', id);
 
-        let company = await Company.patchCompany(partialUpdateQuery);
+        let company = await Company.updateCompany(partialUpdateQuery);
 
         if (company === undefined){
             throw new ExpressError(`No company with handle: ${id}`, 404);

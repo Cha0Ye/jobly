@@ -1,3 +1,6 @@
+/**  */
+
+
 function buildSearchQuery({search, min_employees, max_employees}){        
         
     let args = [];

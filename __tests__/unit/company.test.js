@@ -20,21 +20,23 @@ afterAll(async function(){
 
 describe("Company.searchByQuery()", function() {
     test("gets all companies", async function(){
-        let search = undefined;
-        let min_employees = undefined;
-        let max_employees = undefined;
+        let search;
+        let min_employees;
+        let max_employees;
 
         const response = await Company.searchByQuery({ search, min_employees, max_employees });
 
         expect(response).toHaveLength(3);
-        expect(response[0]).toHaveProperty('handle');
-        expect(response[0]).toHaveProperty('name');
+        expect(response[0]).toMatchObject({
+            handle: expect.any(String),
+            name: expect.any(String)
+        });
     });
 
     test("gets 1 company by search term", async function(){
         let search = "1";
-        let min_employees = undefined;
-        let max_employees = undefined;
+        let min_employees;
+        let max_employees;
 
         const response = await Company.searchByQuery({ search, min_employees, max_employees });
 
@@ -44,7 +46,7 @@ describe("Company.searchByQuery()", function() {
 
     test("gets 2 companies by search term and max_employees", async function(){
         let search = "Test";
-        let min_employees = undefined;
+        let min_employees;
         let max_employees = 2500;
 
         const response = await Company.searchByQuery({ search, min_employees, max_employees });
@@ -69,7 +71,7 @@ describe("Company.searchByQuery()", function() {
 
 
 describe("Company.addCompany()", function() {
-    test("test adding a new company", async function(){
+    test("add a new company", async function(){
         let handle = 'TEST4';
         let name = 'Test Co4';
         let num_employees = 4000;
@@ -92,7 +94,7 @@ describe("Company.addCompany()", function() {
         expect(records[0]).toEqual({handle: "TEST4", name: "Test Co4"})
     });
 
-    test("test adding company with existing handle", async function(){
+    test("reject adding company with existing handle", async function(){
         let handle = 'TEST3';
         let name = 'Test Co4';
         let num_employees = 4000;
@@ -109,7 +111,7 @@ describe("Company.addCompany()", function() {
         }
     });
 
-    test("test adding company with existing name", async function(){
+    test("reject adding company with existing name", async function(){
         let handle = 'TEST4';
         let name = 'Test Co3';
         let num_employees = 4000;
@@ -128,15 +130,15 @@ describe("Company.addCompany()", function() {
 
 });
 
-describe("Company.patchCompany()", function() {
-    test("test patching some columns of company", async function(){
+describe("Company.updateCompany()", function() {
+    test("update columns of company", async function(){
 
         let items = {name: "newTest1",
                      num_employees: 1}
 
         const queryObject = partialUpdate("companies", items, "handle", "TEST1")
 
-        const response = await Company.patchCompany(queryObject)
+        const response = await Company.updateCompany(queryObject)
 
         
         expect(response).toEqual({ handle:'TEST1', 
@@ -148,11 +150,11 @@ describe("Company.patchCompany()", function() {
     
     });
 
-    test("throw error when input there is nothing to update", async function(){
+    test("throw error when there is nothing to update", async function(){
         const queryObject = partialUpdate("companies", {}, "handle", "TEST1")
         
         try {
-            await Company.patchCompany(queryObject)
+            await Company.updateCompany(queryObject)
         } catch (err) {
             expect(err).toEqual({ 
                 message: "Must update at least one of the following: name, num_employees, description, logo_url", 
@@ -165,7 +167,7 @@ describe("Company.patchCompany()", function() {
 });
 
 describe("Company.getByHandle()", function() {
-    test("test get company by handle", async function(){
+    test("get company by handle", async function(){
 
         const response = await Company.getByHandle("TEST3");
 
