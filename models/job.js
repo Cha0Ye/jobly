@@ -31,9 +31,21 @@ class Job{
         return jobResult.rows;
     }
 
-    //FIXME:in error message, can we change company_handle?
+    static async getById(id) {
+      let job = await db.query(
+        `SELECT title, salary, equity, company_handle
+               FROM jobs
+               WHERE id=$1`,
+        [id]
+      );
+  
+      
+      return job.rows[0];
+    }
+
     static async updateJob({ query, values }){
         try {
+          debugger;
             const update = await db.query(query, values);
       
             return update.rows[0];

@@ -60,7 +60,7 @@ class Company {
     );
 
     let jobsData = await db.query(
-      `SELECT title, date_posted
+      `SELECT id, title, date_posted, equity, salary
        FROM jobs
        WHERE company_handle=$1
        ORDER BY date_posted DESC`,
