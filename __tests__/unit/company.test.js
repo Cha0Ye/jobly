@@ -66,3 +66,23 @@ describe("Company.searchByQuery()", async function() {
     });
 })
 
+//'TEST3', 'Test Co3', 3000, 'test description3', 'test_url3')
+describe("Company.addCompany()", async function() {
+    test("test adding a new company", async function(){
+        let handle = 'TEST4';
+        let name = 'Test Co4';
+        let num_employees = 4000;
+        let description = 'test description4';
+        let logo_url = 'test_url4';
+
+        const response = await Company.addCompany({ handle, name, num_employees, description, logo_url });
+
+        
+        expect(response).toEqual({ handle:'TEST4', 
+                                   name:'Test Co4', 
+                                   num_employees:4000,
+                                   description: 'test description4',
+                                   logo_url: 'test_url4'});
+        
+    });
+});
