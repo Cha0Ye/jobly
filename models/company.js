@@ -1,33 +1,12 @@
-const partialUpdateSQL = require('../helpers/partialUpdate');
+const buildSearchQuery = require('../helpers/buildSearchQuery');
 const db = require('../db');
 
 class Company {
 
     static async searchByQuery({search, min_employees, max_employees}){
         
-        let args = [];
-        let params = [];
+        let {query, params} = buildSearchQuery({search, min_employees, max_employees});
         
-        if (search){
-            args.push(`name ILIKE $${args.length + 1}`);
-            params.push(`%${search}%`)
-        }
-        if (min_employees){
-            args.push(`num_employees > $${args.length + 1}`);
-            params.push(min_employees)
-        }
-        if (max_employees){
-            args.push(`num_employees < $${args.length + 1}`)
-            params.push(max_employees)
-        }
-
-        let query = `SELECT handle, name 
-                     FROM companies`; 
-
-        if (args.length > 0){
-            query += ` WHERE ${args.join(' AND ')}`
-        }
-        debugger
         const companiesResult = await db.query (
             query,
             params)
@@ -36,17 +15,23 @@ class Company {
     }
     
     static async addCompany({handle, name, num_employees, description, logo_url}){
-        const result = await db.query(
-            `INSERT INTO companies (handle, name, num_employees, description, logo_url) 
-             VALUES ($1, $2, $3, $4, $5)
-            RETURNING handle, name, num_employees, description, logo_url`, 
-            [handle, name, num_employees, description, logo_url]);
-            return result.rows[0];
+        try {
+            const result = await db.query(
+                `INSERT INTO companies (handle, name, num_employees, description, logo_url) 
+                VALUES ($1, $2, $3, $4, $5)
+                RETURNING handle, name, num_employees, description, logo_url`, 
+                [handle, name, num_employees, description, logo_url]);
+                return result.rows[0];
+        } catch(err) {
+            throw { message: "Company handle and name must be unique", 
+                    status: 409 };
+        }
     }
 
     static async patchCompany({query, values}){
 
         const update = await db.query(query, values);
+            
         return update.rows[0];
     }
 
