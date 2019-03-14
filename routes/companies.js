@@ -31,7 +31,7 @@ router.get("/", async function(req, res, next) {
 router.get('/:handle', async function(req, res, next){
     try{
         let handle = req.params.handle;
-        let company = await Company.getOneCompany(handle);
+        let company = await Company.getByHandle(handle);
 
         if (company === undefined){
             throw new ExpressError(`No company with name: ${handle}`, 404);

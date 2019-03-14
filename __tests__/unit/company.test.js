@@ -1,6 +1,7 @@
 process.env.NODE_ENV = 'test';
 const Company = require('../../models/company');
 const db = require('../../db');
+const partialUpdate = require('../../helpers/partialUpdate')
 
 beforeEach(async function () {
     await db.query(`INSERT INTO companies (handle, name, num_employees, description, logo_url)
@@ -91,7 +92,120 @@ describe("Company.addCompany()", function() {
         expect(records[0]).toEqual({handle: "TEST4", name: "Test Co4"})
     });
 
+    test("test adding company with existing handle", async function(){
+        let handle = 'TEST3';
+        let name = 'Test Co4';
+        let num_employees = 4000;
+        let description = 'test description4';
+        let logo_url = 'test_url4';
 
+        try {
+            await Company.addCompany({ handle, name, num_employees, description, logo_url });
+        } catch (e) {
+            expect(e).toEqual({ 
+                message: "Company handle and name must be unique", 
+                status: 409 
+            });
+        }
+    });
 
+    test("test adding company with existing name", async function(){
+        let handle = 'TEST4';
+        let name = 'Test Co3';
+        let num_employees = 4000;
+        let description = 'test description4';
+        let logo_url = 'test_url4';
 
+        try {
+            await Company.addCompany({ handle, name, num_employees, description, logo_url });
+        } catch (e) {
+            expect(e).toEqual({ 
+                message: "Company handle and name must be unique", 
+                status: 409 
+            });
+        }
+    });
+
+});
+
+describe("Company.patchCompany()", function() {
+    test("test patching some columns of company", async function(){
+
+        let items = {name: "newTest1",
+                     num_employees: 1}
+
+        const queryObject = partialUpdate("companies", items, "handle", "TEST1")
+
+        const response = await Company.patchCompany(queryObject)
+
+        
+        expect(response).toEqual({ handle:'TEST1', 
+                                   name:'newTest1', 
+                                   num_employees:1,
+                                   description: 'test description1',
+                                   logo_url: 'test_url1'});
+
+    
+    });
+
+    test("throw error when input there is nothing to update", async function(){
+        const queryObject = partialUpdate("companies", {}, "handle", "TEST1")
+        
+        try {
+            await Company.patchCompany(queryObject)
+        } catch (err) {
+            expect(err).toEqual({ 
+                message: "Must update at least one of the following: name, num_employees, description, logo_url", 
+                status: 400 
+            });
+        }
+        
+    });
+
+});
+
+describe("Company.getByHandle()", function() {
+    test("test get company by handle", async function(){
+
+        const response = await Company.getByHandle("TEST3");
+
+        
+        expect(response).toEqual({ handle:'TEST3', 
+                                   name:'Test Co3', 
+                                   num_employees:3000,
+                                   description: 'test description3',
+                                   logo_url: 'test_url3'});
+
+    
+    });
+
+    test("return undefined when company cannot be found", async function(){
+        const response = await Company.getByHandle("TEST1000000");
+
+        expect(response).toEqual(undefined);
+        
+    });
+
+    
+});
+
+describe("Company.deleteCompany()", function() {
+    test("successful deletion", async function(){
+
+        const response = await Company.deleteCompany("TEST2");
+        
+        expect(response).toEqual({ handle:'TEST2', 
+                                   name:'Test Co2'});
+
+    
+    });
+
+    test("return undefined when company doesn't exist", async function(){
+        const response = await Company.getByHandle("TEST1000000");
+
+        expect(response).toEqual(undefined);
+        
+    });
+
+    
 });

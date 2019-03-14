@@ -30,13 +30,21 @@ class Company {
 
     static async patchCompany({query, values}){
 
+        try {
+
         const update = await db.query(query, values);
             
         return update.rows[0];
+        } catch (err) {
+            throw { message: "Must update at least one of the following: name, num_employees, description, logo_url", 
+                    status: 400 }
+        }
+    
     }
+    
 
 
-    static async getOneCompany(handle){
+    static async getByHandle(handle){
         
         let company = await db.query(
             `SELECT handle, name, num_employees, description, logo_url
