@@ -17,7 +17,7 @@ afterAll(async function(){
     await db.end();
 });
 
-describe("Company.searchByQuery()", async function() {
+describe("Company.searchByQuery()", function() {
     test("gets all companies", async function(){
         let search = undefined;
         let min_employees = undefined;
@@ -67,7 +67,7 @@ describe("Company.searchByQuery()", async function() {
 })
 
 //'TEST3', 'Test Co3', 3000, 'test description3', 'test_url3')
-describe("Company.addCompany()", async function() {
+describe("Company.addCompany()", function() {
     test("test adding a new company", async function(){
         let handle = 'TEST4';
         let name = 'Test Co4';
