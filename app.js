@@ -6,8 +6,10 @@ const ExpressError = require("./helpers/expressError");
 const companyRoutes =require('./routes/companies');
 const jobRoutes = require('./routes/jobs');
 const userRoutes = require('./routes/users')
-
 const morgan = require("morgan");
+
+const jwt = require('jsonwebtoken');
+const { SECRET_KEY } = require('./config');
 
 const app = express();
 
@@ -21,6 +23,8 @@ app.use('/users', userRoutes);
 
 // add logging system
 app.use(morgan("tiny"));
+
+// app.login('/login',)
 
 /** 404 handler */
 
