@@ -83,10 +83,6 @@ router.patch("/:handle", async function(req, res, next){
 
         let company = await Company.updateCompany(partialUpdateQuery);
 
-        if (company === undefined){
-            throw new ExpressError(`No company with handle: ${id}`, 404);
-        }
-
         return res.json({company});
         
     }

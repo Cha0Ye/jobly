@@ -5,7 +5,7 @@ const { BCRYPT_WORK_ROUNDS } = require("../config");
 //FIXME
 
 class User {
-  static async createUser( {username, password, first_name, last_name, email, photo_url, is_admin }) {
+  static async addUser( {username, password, first_name, last_name, email, photo_url, is_admin = false }) {
     try {
       let hashedPassword = bcrypt.hash(password, BCRYPT_WORK_ROUNDS);
       let result = await db.query(
@@ -32,12 +32,13 @@ class User {
   static async getAllUsers(){
     let allUsers = await db.query(
         ` SELECT username, first_name, last_name, email
-          FROM users`
+          FROM users
+          ORDER BY username`
     );
     return allUsers.rows;
   }
 
-  static async getUserByUsername(username){
+  static async getByUsername(username){
       let user = await db.query(
           `SELECT username, first_name, last_name, email, photo_url
            FROM users
@@ -51,8 +52,14 @@ class User {
         const update = await db.query(query, values);
         return update.rows[0];
     } catch(err){
+      if (err.message.includes("duplicate")){
+        throw { message: "email must be unique",
+                status: 409 }
+        
+      } else {
         throw { message: "Must update one of the following: first_name, last_name, email, photo_url",
                 status: 400};
+      }
     }
   }
 
