@@ -52,24 +52,29 @@ class Company {
 
   /** Given a company handle, return the company information. */
   static async getByHandle(handle) {
-    let companyData = await db.query(
-      `SELECT handle, name, num_employees, description, logo_url
-             FROM companies
-             WHERE handle=$1`,
-      [handle]
-    );
+    try{
+      let companyData = await db.query(
+        `SELECT handle, name, num_employees, description, logo_url
+              FROM companies
+              WHERE handle=$1`,
+        [handle]
+      );
 
-    let jobsData = await db.query(
-      `SELECT id, title, date_posted, equity, salary
-       FROM jobs
-       WHERE company_handle=$1
-       ORDER BY date_posted DESC`,
-       [handle]
-    )
+      let jobsData = await db.query(
+        `SELECT id, title, date_posted, equity, salary
+        FROM jobs
+        WHERE company_handle=$1
+        ORDER BY date_posted DESC`,
+        [handle]
+      )
 
-    let { ...companyInfo } = companyData.rows[0];
+      let { ...companyInfo } = companyData.rows[0];
 
-    return { ...companyInfo, jobs: jobsData.rows };
+      return { ...companyInfo, jobs: jobsData.rows };
+    } catch (err) {
+      throw { message: `No company with handle: ${handle}`,
+              status: 404 };
+    }
   }
 
   /** Delete a company given the handle and returns the company that was deleted. */
