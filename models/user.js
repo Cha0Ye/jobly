@@ -7,7 +7,7 @@ const { BCRYPT_WORK_ROUNDS } = require("../config");
 class User {
   static async addUser( {username, password, first_name, last_name, email, photo_url, is_admin = false }) {
     try {
-      let hashedPassword = bcrypt.hash(password, BCRYPT_WORK_ROUNDS);
+      let hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_ROUNDS);
       let result = await db.query(
         ` INSERT INTO users (username, password, first_name, last_name, email, photo_url, is_admin)
                       VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -70,6 +70,18 @@ class User {
            RETURNING username`, [username]
       ); 
       return deletedUser.rows[0];
+  }
+
+  static async authenticate(username, password){
+    debugger;
+    const result = await db.query(
+      `SELECT password FROM users
+       WHERE username = $1`, [username]
+    );
+    const user = result.rows[0];
+    if(user){
+      return await bcrypt.compare(password, user.password);
+    }
   }
 }
 

@@ -7,9 +7,10 @@ const companyRoutes =require('./routes/companies');
 const jobRoutes = require('./routes/jobs');
 const userRoutes = require('./routes/users')
 const morgan = require("morgan");
-
+const User = require('./models/user');
 const jwt = require('jsonwebtoken');
 const { SECRET_KEY } = require('./config');
+const OPTIONS = {expiresIn: 60*60};
 
 const app = express();
 
@@ -24,7 +25,22 @@ app.use('/users', userRoutes);
 // add logging system
 app.use(morgan("tiny"));
 
-// app.login('/login',)
+app.post('/login', async function(req, res, next) {
+  try{
+    debugger;
+    const { username, password } = req.body;
+    const currUser = await User.authenticate(username, password);
+    if(currUser){
+      let token = jwt.sign({username}, SECRET_KEY, OPTIONS);
+      return res.json({token});
+    }
+    throw new ExpressError("Can't authenticate!", 400);
+  }
+  catch(err){
+      next(err);
+  }
+
+});
 
 /** 404 handler */
 

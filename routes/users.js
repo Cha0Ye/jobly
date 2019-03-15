@@ -7,6 +7,7 @@ const jsonschema = require('jsonschema');
 const postUserSchema = require('../schemas/postUser.json');
 const patchUserSchema = require('../schemas/patchUser.json');
 
+
 const router = express.Router();
 
 router.post("/", async function(req, res, next) {
