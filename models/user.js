@@ -70,6 +70,18 @@ class User {
       ); 
       return deletedUser.rows[0];
   }
+
+  static async authenticate(username, password){
+    debugger;
+    const result = await db.query(
+      `SELECT password FROM users
+       WHERE username = $1`, [username]
+    );
+    const user = result.rows[0];
+    if(user){
+      return await bcrypt.compare(password, user.password);
+    }
+  }
 }
 
 module.exports = User;
