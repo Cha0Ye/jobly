@@ -6,7 +6,7 @@ const sqlForPartialUpdate = require('../helpers/partialUpdate');
 const jsonschema = require('jsonschema');
 const postUserSchema = require('../schemas/postUser.json');
 const patchUserSchema = require('../schemas/patchUser.json');
-
+const { authenticateJWT, ensureLoggedIn, ensureCorrectUser} = require('../middleware/auth');
 
 const router = express.Router();
 
