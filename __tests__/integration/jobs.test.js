@@ -13,10 +13,10 @@ beforeEach(async function () {
                            ('TEST3', 'Test Co3', 3000, 'test description3', 'test_url3')`)
 
 
-    await db.query(`INSERT INTO jobs (title, salary, equity, company_handle)
-                    VALUES ('TESTER1', 1000, 0.1, 'TEST1'),
-                           ('TESTER2', 2000, 0.2, 'TEST2'), 
-                           ('TESTER3', 3000, 0.3, 'TEST3')`)
+    await db.query(`INSERT INTO jobs (id,title, salary, equity, company_handle)
+                    VALUES (1,'TESTER1', 1000, 0.1, 'TEST1'),
+                           (2,'TESTER2', 2000, 0.2, 'TEST2'), 
+                           (3000,'TESTER3', 3000, 0.3, 'TEST3')`)
 
 });
 
@@ -133,3 +133,25 @@ describe("GET /jobs", function () {
     });
 });       
   
+
+describe("GET /jobs/[id]", function () {
+    test("Get job by id", async function () {
+        const response = await request(app)
+            .get('/jobs/3000')
+
+        expect(response.statusCode).toBe(200);
+
+        expect(response.body).toEqual({
+            job:
+                {
+                    title: "TESTER3",
+                    salary: 3000,
+                    equity: 0.3,
+                    company_handle: 'TEST3'
+                },
+            
+            
+        });
+    });
+});       
+
