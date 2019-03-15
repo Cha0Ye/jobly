@@ -6,7 +6,7 @@ const sqlForPartialUpdate = require('../helpers/partialUpdate');
 const jsonschema = require('jsonschema');
 const postUserSchema = require('../schemas/postUser.json');
 const patchUserSchema = require('../schemas/patchUser.json');
-const { authenticateJWT, ensureLoggedIn, ensureCorrectUser} = require('../middleware/auth');
+const { authenticateJWT, ensureLoggedIn, ensureCorrectUser, ensureIsAdmin } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -54,7 +54,10 @@ router.get('/:username', async function(req, res, next){
     }
 });
 
-router.patch("/:username", async function(req, res, next){
+router.patch("/:username", 
+             ensureLoggedIn, 
+             ensureCorrectUser,
+             async function(req, res, next){
     try{
         debugger;
         let result = jsonschema.validate(req.body, patchUserSchema);
@@ -86,7 +89,10 @@ router.patch("/:username", async function(req, res, next){
 
 });
 
-router.delete('/:username', async function(req, res, next){
+router.delete('/:username', 
+               ensureLoggedIn, 
+               ensureCorrectUser,
+               async function(req, res, next){
     try{
         let username = req.params.username;
         let deletedUser = await User.deleteUser(username);

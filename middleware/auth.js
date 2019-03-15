@@ -43,10 +43,26 @@ function ensureCorrectUser(req, res, next) {
     return next({ status: 401, message: "Unauthorized" });
   }
 }
+
+
+function ensureIsAdmin(req, res, next){
+    try{
+        if(req.user.is_admin){
+            return next();
+        }
+        else{
+            return next({ status: 401, message: "Unauthorized" });
+        }
+    }
+    catch(err){
+        return next({ status: 401, message: "Unauthorized" });
+    }
+}
 // end
 
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
-  ensureCorrectUser
+  ensureCorrectUser,
+  ensureIsAdmin
 };

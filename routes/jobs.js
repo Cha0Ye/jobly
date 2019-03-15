@@ -6,11 +6,14 @@ const sqlForPartialUpdate = require('../helpers/partialUpdate');
 const jsonschema = require('jsonschema');
 const postJobSchema = require('../schemas/postJob.json');
 const patchJobSchema = require('../schemas/patchJob.json')
-const { authenticateJWT, ensureLoggedIn, ensureCorrectUser} = require('../middleware/auth');
+const { ensureLoggedIn,  ensureIsAdmin} = require('../middleware/auth');
 
 const router = express.Router();
 
-router.post("/", async function(req, res, next) {
+router.post("/", 
+            ensureLoggedIn, 
+            ensureIsAdmin,
+            async function(req, res, next) {
     try{
         let result = jsonschema.validate(req.body, postJobSchema);
 
@@ -27,7 +30,9 @@ router.post("/", async function(req, res, next) {
     }
 });
 
-router.get("/", async function(req, res, next) {
+router.get("/", 
+            ensureLoggedIn,
+            async function(req, res, next) {
     try{
         let { search, min_salary, min_equity } = req.query;
         if (min_salary && !Number.isFinite(+min_salary) || min_equity && !Number.isFinite(+min_equity)){
@@ -42,7 +47,9 @@ router.get("/", async function(req, res, next) {
     }
 });
 
-router.get('/:id', async function(req, res, next){
+router.get('/:id', 
+            ensureLoggedIn, 
+            async function(req, res, next) {
     try{
         let id = req.params.id;
         let job = await Job.getById(id);
@@ -58,7 +65,10 @@ router.get('/:id', async function(req, res, next){
     }
 });
 
-router.patch("/:id", async function(req, res, next){
+router.patch("/:id", 
+             ensureLoggedIn, 
+             ensureIsAdmin,
+             async function(req, res, next){
     try{
         debugger;
         let result = jsonschema.validate(req.body, patchJobSchema);
@@ -90,7 +100,10 @@ router.patch("/:id", async function(req, res, next){
 
 });
 
-router.delete('/:id', async function(req, res, next){
+router.delete('/:id', 
+              ensureLoggedIn, 
+              ensureIsAdmin,
+              async function(req, res, next){
     try{
         let id = req.params.id;
         let deletedJob = await Job.deleteJob(id);

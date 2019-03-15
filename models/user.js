@@ -72,15 +72,20 @@ class User {
   }
 
   static async authenticate(username, password){
-    debugger;
     const result = await db.query(
-      `SELECT password FROM users
+      `SELECT password, is_admin 
+       FROM users
        WHERE username = $1`, [username]
     );
     const user = result.rows[0];
     if(user){
-      return await bcrypt.compare(password, user.password);
+      
+      if (await bcrypt.compare(password, user.password)){
+        let is_admin =user.is_admin;
+        return  { is_admin };
+      } 
     }
+    return false;
   }
 }
 

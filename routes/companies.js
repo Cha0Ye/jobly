@@ -6,11 +6,13 @@ const sqlForPartialUpdate = require('../helpers/partialUpdate');
 const jsonschema = require('jsonschema');
 const postCompanySchema = require('../schemas/postCompany.json');
 const patchCompanySchema = require('../schemas/patchCompany.json');
-
+const { ensureLoggedIn, ensureIsAdmin } = require('../middleware/auth');
 const router = express.Router();
 
 /** Route to get company information given a search term, min empoloyees, and or max employees. Returns {companies: [{handle]} */
-router.get("/", async function(req, res, next) {
+router.get("/", 
+            ensureLoggedIn, 
+            async function(req, res, next) {
     try{
         let {search, min_employees, max_employees} = req.query;
         if (min_employees && !Number.isInteger(+min_employees) || max_employees && !Number.isInteger(+max_employees)){
@@ -28,7 +30,9 @@ router.get("/", async function(req, res, next) {
 });
 
 
-router.get('/:handle', async function(req, res, next){
+router.get('/:handle', 
+            ensureLoggedIn, 
+            async function(req, res, next){
     try{
         let handle = req.params.handle;
         let company = await Company.getByHandle(handle);
@@ -46,7 +50,10 @@ router.get('/:handle', async function(req, res, next){
 
 
 
-router.post("/", async function(req, res, next) {
+router.post("/", 
+            ensureLoggedIn, 
+            ensureIsAdmin, 
+            async function(req, res, next) {
     try{
         let result = jsonschema.validate(req.body, postCompanySchema);
 
@@ -64,7 +71,10 @@ router.post("/", async function(req, res, next) {
 });
 
 
-router.patch("/:handle", async function(req, res, next){
+router.patch("/:handle", 
+              ensureLoggedIn, 
+              ensureIsAdmin, 
+              async function(req, res, next){
     try{
 
         let result = jsonschema.validate(req.body, patchCompanySchema);
@@ -92,7 +102,10 @@ router.patch("/:handle", async function(req, res, next){
 
 });
 
-router.delete('/:handle', async function(req, res, next){
+router.delete('/:handle', 
+               ensureLoggedIn, 
+               ensureIsAdminasync, 
+               function(req, res, next){
     try{
         let handle = req.params.handle;
         let deletedCompany = await Company.deleteCompany(handle);
