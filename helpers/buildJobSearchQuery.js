@@ -26,7 +26,7 @@ function buildSearchJobQuery({ search, min_salary, min_equity }){
         query += ` WHERE ${args.join(' AND ')}`;
     }
 
-    query += ` ORDER BY date_posted DESC`;
+    query += ` ORDER BY date_posted DESC, company_handle, title`;
 
     return { query, params };
 }
