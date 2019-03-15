@@ -6,7 +6,10 @@ const sqlForPartialUpdate = require('../helpers/partialUpdate');
 const jsonschema = require('jsonschema');
 const postUserSchema = require('../schemas/postUser.json');
 const patchUserSchema = require('../schemas/patchUser.json');
-const { authenticateJWT, ensureLoggedIn, ensureCorrectUser, ensureIsAdmin } = require('../middleware/auth');
+const { ensureLoggedIn, ensureCorrectUser } = require('../middleware/auth');
+const jwt = require('jsonwebtoken');
+const { SECRET_KEY } = require('../config');
+const OPTIONS = {expiresIn: 60*60};
 
 const router = express.Router();
 
@@ -18,10 +21,14 @@ router.post("/", async function(req, res, next) {
             let listOfErrors = result.errors.map(error => error.stack);
             throw new ExpressError(listOfErrors, 400);
         }
-        const { username, password, first_name, last_name, email, photo_url, is_admin } = req.body;
+        const { username, password, first_name, last_name, email, photo_url } = req.body;
 
-        let user = await User.addUser({ username, password, first_name, last_name, email, photo_url, is_admin });
-        return res.status(201).json({ user });
+        let user = await User.addUser({ username, password, first_name, last_name, email, photo_url });
+        
+        let is_admin = user.is_admin;
+
+        let token = jwt.sign({username, is_admin}, SECRET_KEY, OPTIONS);
+        return res.status(201).json({ token });
     }
     catch(err){
         return next(err);

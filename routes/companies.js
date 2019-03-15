@@ -104,8 +104,8 @@ router.patch("/:handle",
 
 router.delete('/:handle', 
                ensureLoggedIn, 
-               ensureIsAdminasync, 
-               function(req, res, next){
+               ensureIsAdmin, 
+               async function(req, res, next){
     try{
         let handle = req.params.handle;
         let deletedCompany = await Company.deleteCompany(handle);

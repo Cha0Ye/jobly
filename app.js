@@ -11,14 +11,12 @@ const User = require('./models/user');
 const jwt = require('jsonwebtoken');
 const { SECRET_KEY } = require('./config');
 const OPTIONS = {expiresIn: 60*60};
-const { authenticateJWT} = require('../middleware/auth');
+const { authenticateJWT} = require('./middleware/auth');
 
 const app = express();
 
 app.use(express.json());
 app.use(authenticateJWT);
-
-
 
 app.use('/companies',companyRoutes);
 app.use('/jobs', jobRoutes);

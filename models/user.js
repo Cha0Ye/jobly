@@ -4,7 +4,7 @@ const { BCRYPT_WORK_ROUNDS } = require("../config");
 //FIXME
 
 class User {
-  static async addUser( {username, password, first_name, last_name, email, photo_url, is_admin = false }) {
+  static async addUser( { username, password, first_name, last_name, email, photo_url }) {
     try {
       let hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_ROUNDS);
       let result = await db.query(
@@ -19,7 +19,7 @@ class User {
           last_name,
           email,
           photo_url,
-          is_admin
+          false
         ]
       );
       return result.rows[0];
@@ -81,7 +81,7 @@ class User {
     if(user){
       
       if (await bcrypt.compare(password, user.password)){
-        let is_admin =user.is_admin;
+        let is_admin = user.is_admin;
         return  { is_admin };
       } 
     }
