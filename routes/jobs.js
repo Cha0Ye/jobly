@@ -10,6 +10,7 @@ const { ensureLoggedIn,  ensureIsAdmin} = require('../middleware/auth');
 
 const router = express.Router();
 
+/*post a new job given title, salary, equity, and company_handle if user is logged in and an admin. otherwise, return unauthorized   */
 router.post("/", 
             ensureLoggedIn, 
             ensureIsAdmin,
@@ -29,7 +30,7 @@ router.post("/",
         return next(err);
     }
 });
-
+/* get all jobs if logged in, otherwise return unauthorized */
 router.get("/", 
             ensureLoggedIn,
             async function(req, res, next) {
@@ -46,7 +47,7 @@ router.get("/",
         next(err);
     }
 });
-
+/* get a job by parameter id if logged in, return unauthorized otherwise */
 router.get('/:id', 
             ensureLoggedIn, 
             async function(req, res, next) {
@@ -64,7 +65,7 @@ router.get('/:id',
         return next(err);
     }
 });
-
+/*modify a job if logged in and is admin, return unauthorized otherwise */
 router.patch("/:id", 
              ensureLoggedIn, 
              ensureIsAdmin,
@@ -99,7 +100,7 @@ router.patch("/:id",
     }
 
 });
-
+/* delete a job given job id if logged in and is admin, return unauthorized otherwise */
 router.delete('/:id', 
               ensureLoggedIn, 
               ensureIsAdmin,

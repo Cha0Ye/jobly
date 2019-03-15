@@ -1,15 +1,21 @@
+/*required module */
 const express = require('express');
+
+/*Helper functions */
 const ExpressError = require('../helpers/expressError');
-const Company = require('../models/company')
 const sqlForPartialUpdate = require('../helpers/partialUpdate');
+
+const Company = require('../models/company')
 
 const jsonschema = require('jsonschema');
 const postCompanySchema = require('../schemas/postCompany.json');
 const patchCompanySchema = require('../schemas/patchCompany.json');
+
 const { ensureLoggedIn, ensureIsAdmin } = require('../middleware/auth');
+
 const router = express.Router();
 
-/** Route to get company information given a search term, min empoloyees, and or max employees. Returns {companies: [{handle]} */
+/** Route to get company information given a search term, min employees, and or max employees. Returns {companies: [{handle]} */
 router.get("/", 
             ensureLoggedIn, 
             async function(req, res, next) {
@@ -29,7 +35,7 @@ router.get("/",
     }
 });
 
-
+/*Route to get a company by its handle. Returns {company: companyData} */
 router.get('/:handle', 
             ensureLoggedIn, 
             async function(req, res, next){
@@ -49,7 +55,7 @@ router.get('/:handle',
 });
 
 
-
+/* Create a new company if logged in and is admin */
 router.post("/", 
             ensureLoggedIn, 
             ensureIsAdmin, 
@@ -70,7 +76,7 @@ router.post("/",
     }
 });
 
-
+/* update a company if logged in and is admin */
 router.patch("/:handle", 
               ensureLoggedIn, 
               ensureIsAdmin, 
@@ -102,6 +108,7 @@ router.patch("/:handle",
 
 });
 
+/* delete a company  by handle if logged in and is admin */
 router.delete('/:handle', 
                ensureLoggedIn, 
                ensureIsAdmin, 

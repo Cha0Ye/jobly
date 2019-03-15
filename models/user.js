@@ -1,9 +1,11 @@
-const bcrypt = require("bcrypt");
 const db = require("../db");
+
+const bcrypt = require("bcrypt");
 const { BCRYPT_WORK_ROUNDS } = require("../config");
-//FIXME
+
 
 class User {
+  /* add user given username, password, first_name, last_name, email, and photo_url */
   static async addUser( { username, password, first_name, last_name, email, photo_url }) {
     try {
       let hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_ROUNDS);
@@ -27,7 +29,7 @@ class User {
       throw { message: "username and email must be unique", status: 409 };
     }
   }
-
+  /* get all users */
   static async getAllUsers(){
     let allUsers = await db.query(
         ` SELECT username, first_name, last_name, email
@@ -36,7 +38,7 @@ class User {
     );
     return allUsers.rows;
   }
-
+  /* get a user by username */
   static async getByUsername(username){
       let user = await db.query(
           `SELECT username, first_name, last_name, email, photo_url
@@ -46,6 +48,7 @@ class User {
       return user.rows[0];
   }
 
+  /*update a user given query and values as parameters */
   static async updateUser({ query, values }){
     try{
         const update = await db.query(query, values);
@@ -61,7 +64,7 @@ class User {
       }
     }
   }
-
+  /*delete a user given username */
   static async deleteUser(username){
       let deletedUser = await db.query(
           `DELETE from users
@@ -71,6 +74,7 @@ class User {
       return deletedUser.rows[0];
   }
 
+  /*authenticate user by username and password. If match with username and pw, return whether is_admin */  
   static async authenticate(username, password){
     const result = await db.query(
       `SELECT password, is_admin 

@@ -3,6 +3,7 @@ const buildJobSearchQuery = require('../helpers/buildJobSearchQuery');
 const db = require('../db');
 
 class Job{
+    /** Add a new job post into the database given title, salary, equity, and company_handle */
     static async addJob({ title, salary, equity, company_handle }){
         try{
         let result = await db.query(
@@ -19,6 +20,7 @@ class Job{
         }
     }
 
+    /** Query database for job given a search term, min salary, or max salary and returns an array of companies.*/
     static async searchByQuery({ search, min_salary, min_equity }) {
         let { query, params } = buildJobSearchQuery({
           search,
@@ -30,7 +32,7 @@ class Job{
     
         return jobResult.rows;
     }
-
+    /** get a job by its id */
     static async getById(id) {
       let job = await db.query(
         `SELECT title, salary, equity, company_handle
@@ -42,7 +44,7 @@ class Job{
       
       return job.rows[0];
     }
-
+    /** Update a job given query and values as its parameter */
     static async updateJob({ query, values }){
         try {
           debugger;
@@ -58,7 +60,7 @@ class Job{
           }
     }
 
-
+    /** delete a job given the job id*/
     static async deleteJob( id ){
         let deletedJob = await db.query( 
             `DELETE from jobs

@@ -1,11 +1,17 @@
+/*required module*/
 const express = require('express');
-const ExpressError = require('../helpers/expressError');
-const User = require('../models/user')
-const sqlForPartialUpdate = require('../helpers/partialUpdate');
 
+/* helper functions*/
+const ExpressError = require('../helpers/expressError');
+const sqlForPartialUpdate = require('../helpers/partialUpdate');
+const User = require('../models/user')
+
+/* Schemas */
 const jsonschema = require('jsonschema');
 const postUserSchema = require('../schemas/postUser.json');
 const patchUserSchema = require('../schemas/patchUser.json');
+
+/* Security */
 const { ensureLoggedIn, ensureCorrectUser } = require('../middleware/auth');
 const jwt = require('jsonwebtoken');
 const { SECRET_KEY } = require('../config');
@@ -13,6 +19,7 @@ const OPTIONS = {expiresIn: 60*60};
 
 const router = express.Router();
 
+/* create a user and receive token on success */
 router.post("/", async function(req, res, next) {
     try{
         let result = jsonschema.validate(req.body, postUserSchema);
@@ -35,6 +42,7 @@ router.post("/", async function(req, res, next) {
     }
 });
 
+/* GET all users */
 router.get("/", async function(req, res, next) {
     try{
         let users = await User.getAllUsers();
@@ -45,6 +53,7 @@ router.get("/", async function(req, res, next) {
     }
 });
 
+/* GET user given username */
 router.get('/:username', async function(req, res, next){
     try{
         let username = req.params.username;
@@ -61,6 +70,7 @@ router.get('/:username', async function(req, res, next){
     }
 });
 
+/* update a user given username if logged in and correct user logged in, return unauthorized otherwise */
 router.patch("/:username", 
              ensureLoggedIn, 
              ensureCorrectUser,
@@ -95,7 +105,7 @@ router.patch("/:username",
     }
 
 });
-
+/* delete a user given username if logged in and the correct user, return unauthorized otherwise */
 router.delete('/:username', 
                ensureLoggedIn, 
                ensureCorrectUser,

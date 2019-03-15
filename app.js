@@ -1,14 +1,22 @@
 /** Express app for jobly. */
 
+/* required modules */
 const express = require("express");
+const morgan = require("morgan");
+const jwt = require('jsonwebtoken');
 
+/* special error class */
 const ExpressError = require("./helpers/expressError");
+
+/* routes */
 const companyRoutes =require('./routes/companies');
 const jobRoutes = require('./routes/jobs');
-const userRoutes = require('./routes/users')
-const morgan = require("morgan");
+const userRoutes = require('./routes/users');
+
+/* user model */
 const User = require('./models/user');
-const jwt = require('jsonwebtoken');
+
+/* security  */
 const { SECRET_KEY } = require('./config');
 const OPTIONS = {expiresIn: 60*60};
 const { authenticateJWT} = require('./middleware/auth');
@@ -26,6 +34,7 @@ app.use('/users', userRoutes);
 // add logging system
 app.use(morgan("tiny"));
 
+/* Login and issue token with or without is_admin rights */
 app.post('/login', async function(req, res, next) {
   try{
 
